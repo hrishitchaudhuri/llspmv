@@ -10,7 +10,9 @@ class CSR {
     vector<int> row_pointer;
     vector<int> column_index;
     vector<int> values;
+    void scan_row_thread(vector<int>& row);
     public:
     CSR(vector<vector<int>> matrix);
+    void display_csr();
 };
 #endif
