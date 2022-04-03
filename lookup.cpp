@@ -20,7 +20,7 @@ vector<vector<int>> computeLUT_1(vector<vector<int>> x) {
             m_1.push_back((i & (0x01 << j)) ? 1 : 0);
         }
 
-        m_2.push_back(mv_naive(x, m_1));
+        m_2.push_back(bool_mv_naive(x, m_1));
 
         m_1.clear();
     }
@@ -39,7 +39,7 @@ vector<vector<int>> computeLUT_2(CSR x) {
             m_1.push_back((i & (0x01 << j)) ? 1 : 0);
         }
 
-        m_2.push_back(spmv_serial(x, m_1));
+        m_2.push_back(bool_spmv_serial(x, m_1));
 
         m_1.clear();
     }
@@ -58,7 +58,7 @@ vector<vector<int>> computeLUT_3(CSR x) {
             m_1.push_back((i & (0x01 << j)) ? 1 : 0);
         }
 
-        m_2.push_back(spmv_parallel_1(x, m_1));
+        m_2.push_back(bool_spmv_parallel_1(x, m_1));
 
         m_1.clear();
     }
