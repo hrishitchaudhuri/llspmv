@@ -11,6 +11,8 @@ class CSR {
         vector<int> row_pointer;
         vector<int> column_index;
         vector<int> values;
+        int original_size;
+
         CSR(vector<vector<int>> matrix);
 };
 #endif

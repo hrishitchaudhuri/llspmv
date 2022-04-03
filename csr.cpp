@@ -8,7 +8,11 @@
 CSR::CSR(vector<vector<int>> arr){
     int rowptr = 0;
     int i = 0;
+
+    original_size = arr.size();
+
     row_pointer.push_back(rowptr);
+    
     for(int i = 0; i < arr.size(); i++){
         for(int j = 0; j < arr[i].size(); j++){
             if(arr[i][j]!=0){
@@ -19,6 +23,8 @@ CSR::CSR(vector<vector<int>> arr){
         }
         row_pointer.push_back(rowptr);
     }
+    
+    /*
     for(auto k: row_pointer){
         cout << k << ' ';
     }
@@ -31,4 +37,5 @@ CSR::CSR(vector<vector<int>> arr){
         cout << k << ' ';
     }
     cout << endl;
+    */
 }

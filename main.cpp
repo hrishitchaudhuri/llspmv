@@ -1,39 +1,120 @@
-#include"csr.h"
 #include<vector>
 #include<iostream>
 
+#include<time.h>
+
+#include"csr.h"
 #include"spmv.h"
+#include "lookup.h"
+
+#define NUM_ELEMENTS 20
+#define SPARSITY_COEF 7
 
 using namespace std;
+typedef std::vector<std::vector<int>> matrix;
+typedef std::vector<int> vtr;
+
+matrix generateSparseMatrix(int n, int sparsity) {
+    matrix m_1;
+    vtr m_2;
+
+    for (int j = 0; j < n; j++) {
+        for (int i = 0; i < n; i++) {    
+            if (rand() % sparsity == 0) {
+                m_2.push_back(1);
+            }
+
+            else {
+                m_2.push_back(0);
+            }
+        }
+
+        m_1.push_back(m_2);
+        m_2.clear();
+    }
+
+    return m_1;
+}
+
+vtr generateSparseVector(int n, int sparsity) {
+    vtr v_1;
+
+    for (int i = 0; i < n; i++) {
+        if (rand() % sparsity == 0) {
+            v_1.push_back(1);
+        }
+
+        else {
+            v_1.push_back(0);
+        }
+    }
+
+    return v_1;
+}
 
 int main(int argc, char * argv[]){
-    vector<vector<int>> a = {{3,0,0,0}, {1,0,4,0}, {0,0,0,5}, {5,3,0,0}};
+    matrix a;
+    a = generateSparseMatrix(NUM_ELEMENTS, SPARSITY_COEF);
+
     CSR csr(a);
 
-    vector<int> y = {4, 5, 3, 1};
+    vtr y;
+    y = generateSparseVector(NUM_ELEMENTS, SPARSITY_COEF);
+
+    clock_t start, end;
 
     #if 0
-    vector<int> res_1 = mv_naive(a, y);
+    vtr res_1 = mv_naive(a, y);
 
+    /*
     for (auto x: res_1) {
         cout << x << "\n";
     }
+    */
     #endif
 
     #if 0
-    vector<int> res_2 = spmv_serial(csr, y);
+    vtr res_2 = spmv_serial(csr, y);
 
+    /*
     for (auto x: res_2) {
         cout << x << "\n";
     }
+    */
     #endif
 
-    #if 1
-    vector<int> res_3 = spmv_parallel_1(csr, y);
+    #if 0
+    vtr res_3 = spmv_parallel_1(csr, y);
 
+    /*
     for (auto x: res_3) {
         cout << x << "\n";
     }
+    */
+    #endif
+
+    #if 0
+    start = clock();
+    matrix m_0 = computeLUT_1(a);
+    end = clock();
+
+    cout << "LUT 1: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
+    #endif
+
+    #if 0
+    start = clock();
+    matrix m_1 = computeLUT_2(csr);
+    end = clock();
+
+    cout << "LUT 2: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
+    #endif
+
+    #if 1
+    start = clock();
+    matrix m_2 = computeLUT_3(csr);
+    end = clock();
+
+    cout << "LUT 3: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
     #endif
 
     return 0;

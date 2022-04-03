@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector>
 #include<thread>
+#include<omp.h>
 
 #include"csr.h"
 
@@ -46,7 +47,7 @@ std::vector<int> spmv_parallel_1(CSR csr_, std::vector<int> x_) {
 	int y_0;
 	std::vector<int> y;
 
-	// std::omp_set_num_threads(NUM_THREADS);
+	omp_set_num_threads(NUM_THREADS);
 
 	for (int i = 0; i < (int) csr_.row_pointer.size(); i++) {
 		y_0 = 0;
