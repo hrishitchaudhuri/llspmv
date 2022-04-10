@@ -124,11 +124,12 @@ std::vector<int> bool_spmv_parallel_1(CSR csr_, std::vector<int> x_) {
 
 	omp_set_num_threads(NUM_THREADS);
 
-	for (int i = 0; i < (int) csr_.row_pointer.size(); i++) {
+	for (int i = 0; i < (int) csr_.row_pointer.size()-1; i++) {
 		y_0 = 0;
 
 		#pragma omp parallel for
 		for (int k = csr_.row_pointer[i]; k < csr_.row_pointer[i+1]; k++) {
+			//printf("%d %d\n", k, omp_get_thread_num());
 			y_0 = y_0 ^ (csr_.values[k] & x_[csr_.column_index[k]]);
 		}
 
@@ -141,5 +142,5 @@ std::vector<int> bool_spmv_parallel_1(CSR csr_, std::vector<int> x_) {
 std::vector<int> bool_spmv_parallel_2(CSR csr_, std::vector<int> x) {
 	int y_0;
 	std::vector<int> y;
-	
+	return y;
 }

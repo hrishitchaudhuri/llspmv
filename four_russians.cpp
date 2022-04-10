@@ -6,9 +6,11 @@
 #include<vector>
 #include<algorithm>
 #include<cmath>
+#include<map>
 
 #include"csr.h"
 #include"spmv.h"
+#include"lookup.h"
 
 std::vector<std::vector<int>> get_products(std::vector<std::vector<int>> x_) {
     int t = x_.size();
@@ -46,12 +48,48 @@ std::vector<std::vector<int>> get_products(std::vector<std::vector<int>> x_) {
     return res_;
 }
 
-std::vector<std::vector<int>> four_russians_bmm(std::vector<std::vector<int>> A_, std::vector<std::vector<int>> B_) {
-    int bound = floor(log2(A_.size()));
+std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>& A_, std::vector<std::vector<int>>& B_) {
+    //int bound = floor(log2(A_.size()));
 
     std::vector<std::vector<int>> C(A_.size(), std::vector<int>(A_.size()));
 
-    std::vector<std::vector<int>> lookupTable;
+    //CSR a_(A_);
+    
+    int n = A_.size();
+    int t = 5;
+
+    map<vector<int>, vector<vector<int>>> lut;  
+    
+    for(int i = 0; i < n/t; i++){
+        for(int j = 0; j < n/t; j++){
+            vector<vector<int>> temp_mat;
+            for(int m = 0; m < t; m++){
+                vector<int> row;
+                for(int n = 0; n < t; n++){
+                    row.push_back(A_[t*i + m][t*j + n]);
+                }
+                temp_mat.push_back(row);
+            }
+            CSR temp_csr(temp_mat);
+            lut[{i,j}] = computeLUT_3(temp_csr);
+        }
+    }
+
+    /*
+    for(auto i: lut){
+        cout << "Key: " << i.first[0] << " " << i.first[1] << '\n';
+        for(auto m: i.second){
+            for(auto n: m){
+                cout <<  n << " ";
+            }
+            cout << '\n';
+        }  
+    }
+    */
+    
+    
+    
+    return C;
 }
 
 #if 0

@@ -6,6 +6,7 @@
 #include"csr.h"
 #include"spmv.h"
 #include "lookup.h"
+#include "four_russians.cpp"
 
 #define NUM_ELEMENTS 20
 #define SPARSITY_COEF 7
@@ -55,8 +56,9 @@ vtr generateSparseVector(int n, int sparsity) {
 int main(int argc, char * argv[]){
     matrix a;
     a = generateSparseMatrix(NUM_ELEMENTS, SPARSITY_COEF);
+    matrix b = generateSparseMatrix(NUM_ELEMENTS, SPARSITY_COEF);
 
-    CSR csr(a);
+    //CSR csr(a);
 
     vtr y;
     y = generateSparseVector(NUM_ELEMENTS, SPARSITY_COEF);
@@ -111,7 +113,8 @@ int main(int argc, char * argv[]){
 
     #if 1
     start = clock();
-    matrix m_2 = computeLUT_3(csr);
+    //matrix m_2 = computeLUT_3(csr);
+    four_russians_serial(a,b);
     end = clock();
 
     cout << "LUT 3: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
