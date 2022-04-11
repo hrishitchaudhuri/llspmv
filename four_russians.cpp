@@ -59,7 +59,7 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
     int t = 5;
 
     map<vector<int>, vector<vector<int>>> lut;  
-    
+    long start = clock();
     for(int i = 0; i < n/t; i++){
         for(int j = 0; j < n/t; j++){
             vector<vector<int>> temp_mat;
@@ -74,7 +74,8 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
             lut[{i,j}] = computeLUT_3(temp_csr);
         }
     }
-
+    long end = clock();
+    cout << "LUT Computation: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
     #if 0
     for(auto i: lut){
         cout << "Key: " << i.first[0] << " " << i.first[1] << '\n';
@@ -86,7 +87,8 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
         }  
     }
     #endif
-
+    
+    start = clock();
     for(int i = 0; i < n; i++){
         for(int j = 0, m = 0; j < n; m = j){
             int k = 0;
@@ -97,7 +99,6 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
                 k++;
                 j++;
             }
-            //cout << i/t << " " << (j-1)/t << endl; 
             vector<int> temp = lut[{i/t,(j-1)/t}][index];
             for(auto x : temp){
                 C[m][i] = x;
@@ -105,7 +106,8 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
             }
         }
     }
-
+    end = clock();
+    cout << "Matrix Computation: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
     return C;
 }
 

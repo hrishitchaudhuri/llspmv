@@ -112,7 +112,6 @@ int main(int argc, char * argv[]){
     #endif
 
     #if 1
-    start = clock();
     //matrix m_2 = computeLUT_3(csr);
     vector<vector<int>> out = four_russians_serial(a,b);
     cout << "Output:\n";
@@ -122,9 +121,7 @@ int main(int argc, char * argv[]){
         }
         cout << "\n";
     }
-    end = clock();
 
-    cout << "LUT 3: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
     #endif
 
     return 0;
