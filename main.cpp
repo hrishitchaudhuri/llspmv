@@ -114,7 +114,16 @@ int main(int argc, char * argv[]){
     #if 1
     //matrix m_2 = computeLUT_3(csr);
     vector<vector<int>> out = four_russians_serial(a,b);
-    cout << "Output:\n";
+    cout << "Serial Output:\n";
+    for(auto i: out){
+        for(auto j: i){
+            cout << j << " ";
+        }
+        cout << "\n";
+    }
+
+    out = four_russians_parallel(a,b);
+    cout << "Parallel Output:\n";
     for(auto i: out){
         for(auto j: i){
             cout << j << " ";

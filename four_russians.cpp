@@ -7,6 +7,7 @@
 #include<algorithm>
 #include<cmath>
 #include<map>
+#include<omp.h>
 
 #include"csr.h"
 #include"spmv.h"
@@ -89,6 +90,74 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
     #endif
     
     start = clock();
+    for(int i = 0; i < n; i++){
+        for(int j = 0, m = 0; j < n; m = j){
+            int k = 0;
+            int index = 0;
+            while(k < t){
+                index = index << 1;
+                index = index | B_[i][j];
+                k++;
+                j++;
+            }
+            vector<int> temp = lut[{i/t,(j-1)/t}][index];
+            for(auto x : temp){
+                C[m][i] = x;
+                m++;
+            }
+        }
+    }
+    end = clock();
+    cout << "Matrix Computation: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
+    return C;
+}
+
+std::vector<std::vector<int>> four_russians_parallel(std::vector<std::vector<int>>& A_, std::vector<std::vector<int>>& B_) {
+    //int bound = floor(log2(A_.size()));
+
+    std::vector<std::vector<int>> C(A_.size(), std::vector<int>(A_.size()));
+
+    //CSR a_(A_);
+
+    //omp_set_num_threads(NUM_THREADS);
+    
+    int n = A_.size();
+    int t = 5;
+
+    map<vector<int>, vector<vector<int>>> lut;  
+    long start = clock();
+    #pragma omp parallel for
+    for(int i = 0; i < n/t; i++){
+        #pragma omp parallel for
+        for(int j = 0; j < n/t; j++){
+            vector<vector<int>> temp_mat;
+            for(int m = 0; m < t; m++){
+                vector<int> row;
+                for(int n = 0; n < t; n++){
+                    row.push_back(A_[t*i + m][t*j + n]);
+                }
+                temp_mat.push_back(row);
+            }
+            CSR temp_csr(temp_mat);
+            lut[{i,j}] = computeLUT_3(temp_csr);
+        }
+    }
+    long end = clock();
+    cout << "LUT Computation: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
+    #if 0
+    for(auto i: lut){
+        cout << "Key: " << i.first[0] << " " << i.first[1] << '\n';
+        for(auto m: i.second){
+            for(auto n: m){
+                cout <<  n << " ";
+            }
+            cout << '\n';
+        }  
+    }
+    #endif
+    
+    start = clock();
+    #pragma omp parallel for
     for(int i = 0; i < n; i++){
         for(int j = 0, m = 0; j < n; m = j){
             int k = 0;
