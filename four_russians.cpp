@@ -75,7 +75,7 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
         }
     }
 
-    /*
+    #if 0
     for(auto i: lut){
         cout << "Key: " << i.first[0] << " " << i.first[1] << '\n';
         for(auto m: i.second){
@@ -85,10 +85,27 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
             cout << '\n';
         }  
     }
-    */
-    
-    
-    
+    #endif
+
+    for(int i = 0; i < n; i++){
+        for(int j = 0, m = 0; j < n; m = j){
+            int k = 0;
+            int index = 0;
+            while(k < t){
+                index = index << 1;
+                index = index | B_[i][j];
+                k++;
+                j++;
+            }
+            //cout << i/t << " " << (j-1)/t << endl; 
+            vector<int> temp = lut[{i/t,(j-1)/t}][index];
+            for(auto x : temp){
+                C[m][i] = x;
+                m++;
+            }
+        }
+    }
+
     return C;
 }
 
