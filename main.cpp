@@ -8,7 +8,7 @@
 #include "lookup.h"
 #include "four_russians.cpp"
 
-#define NUM_ELEMENTS 20
+#define NUM_ELEMENTS 1000
 #define SPARSITY_COEF 7
 
 using namespace std;
@@ -113,23 +113,26 @@ int main(int argc, char * argv[]){
 
     #if 1
     //matrix m_2 = computeLUT_3(csr);
-    vector<vector<int>> out = four_russians_serial(a,b);
     cout << "Serial Output:\n";
+    vector<vector<int>> out = four_russians_serial(a,b);
+    #if 0
     for(auto i: out){
         for(auto j: i){
             cout << j << " ";
         }
         cout << "\n";
     }
-
-    out = four_russians_parallel(a,b);
+    #endif
     cout << "Parallel Output:\n";
+    out = four_russians_parallel(a,b);
+    #if 0
     for(auto i: out){
         for(auto j: i){
             cout << j << " ";
         }
         cout << "\n";
     }
+    #endif
 
     #endif
 

@@ -57,7 +57,8 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
     //CSR a_(A_);
     
     int n = A_.size();
-    int t = 5;
+    int t = ceil(log2(n)/2);
+    cout << "Partition Value: " << t << endl;
 
     map<vector<int>, vector<vector<int>>> lut;  
     long start = clock();
@@ -122,7 +123,8 @@ std::vector<std::vector<int>> four_russians_parallel(std::vector<std::vector<int
     //omp_set_num_threads(NUM_THREADS);
     
     int n = A_.size();
-    int t = 5;
+    int t = ceil(log2(n)/2);
+    cout << "Partition Value: " << t << endl; 
 
     map<vector<int>, vector<vector<int>>> lut;  
     long start = clock();
