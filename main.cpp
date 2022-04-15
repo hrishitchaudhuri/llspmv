@@ -8,7 +8,7 @@
 #include "lookup.h"
 #include "four_russians.cpp"
 
-#define NUM_ELEMENTS 1000
+#define NUM_ELEMENTS 100
 #define SPARSITY_COEF 7
 
 using namespace std;
@@ -63,6 +63,23 @@ int main(int argc, char * argv[]){
     vtr y;
     y = generateSparseVector(NUM_ELEMENTS, SPARSITY_COEF);
 
+    matrix c;
+    vtr temp;
+
+    int res;
+
+    for (int i = 0; i < NUM_ELEMENTS; i++) {
+        temp.clear();
+        for (int j = 0; j < NUM_ELEMENTS; j++) {
+            res = 0;
+            for (int k = 0; k < NUM_ELEMENTS; k++) {
+                res = res ^ (a[i][k] & a[k][j]);
+            }
+            temp.push_back(res);
+        }
+        c.push_back(temp);
+    }
+
     clock_t start, end;
 
     #if 0
@@ -114,7 +131,8 @@ int main(int argc, char * argv[]){
     #if 1
     //matrix m_2 = computeLUT_3(csr);
     cout << "Serial Output:\n";
-    vector<vector<int>> out = four_russians_serial(a,b);
+    vector<vector<int>> out_1 = four_russians_serial(a,b);
+
     #if 0
     for(auto i: out){
         for(auto j: i){
@@ -123,14 +141,26 @@ int main(int argc, char * argv[]){
         cout << "\n";
     }
     #endif
+    
     cout << "Parallel Output:\n";
-    out = four_russians_parallel(a,b);
+    vector<vector<int>> out_2 = four_russians_parallel_2(a,b);
+    
     #if 0
     for(auto i: out){
         for(auto j: i){
             cout << j << " ";
         }
         cout << "\n";
+    }
+    #endif
+
+    #if 1
+    for (int i = 0; i < out_1.size(); i++) {
+        for (int j = 0; j < out_1[i].size(); j++) {
+            if (out_1[i][j] != c[i][j]) {
+                cout << "Mismatch on " << i << " " << j << "\n";
+            }
+        }
     }
     #endif
 
