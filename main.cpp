@@ -8,16 +8,19 @@
 #include "lookup.h"
 #include "four_russians.cpp"
 
-#define NUM_ELEMENTS 100
+#define NUM_ELEMENTS 10
 #define SPARSITY_COEF 7
 
 using namespace std;
 typedef std::vector<std::vector<int>> matrix;
 typedef std::vector<int> vtr;
 
+int rand_seed = 0;
+
 matrix generateSparseMatrix(int n, int sparsity) {
     matrix m_1;
     vtr m_2;
+    srand(rand_seed+=10);
 
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {    
@@ -73,7 +76,7 @@ int main(int argc, char * argv[]){
         for (int j = 0; j < NUM_ELEMENTS; j++) {
             res = 0;
             for (int k = 0; k < NUM_ELEMENTS; k++) {
-                res = res ^ (a[i][k] & a[k][j]);
+                res = res | (a[i][k] & b[k][j]);
             }
             temp.push_back(res);
         }
@@ -128,6 +131,9 @@ int main(int argc, char * argv[]){
     cout << "LUT 2: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
     #endif
 
+    print_matrix(a, "A");
+    print_matrix(b, "B");
+
     #if 1
     //matrix m_2 = computeLUT_3(csr);
     cout << "Serial Output:\n";
@@ -145,8 +151,15 @@ int main(int argc, char * argv[]){
     cout << "Parallel Output:\n";
     vector<vector<int>> out_2 = four_russians_parallel_2(a,b);
     
-    #if 0
-    for(auto i: out){
+    #if 1
+    for(auto i: out_1){
+        for(auto j: i){
+            cout << j << " ";
+        }
+        cout << "\n";
+    }
+cout << " ----------------------------------- \n";
+    for(auto i: c){
         for(auto j: i){
             cout << j << " ";
         }
