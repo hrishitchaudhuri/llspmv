@@ -73,7 +73,7 @@ int main(int argc, char * argv[]){
         for (int j = 0; j < NUM_ELEMENTS; j++) {
             res = 0;
             for (int k = 0; k < NUM_ELEMENTS; k++) {
-                res = res ^ (a[i][k] & a[k][j]);
+                res = res ^ (a[i][k] & b[k][j]);
             }
             temp.push_back(res);
         }
