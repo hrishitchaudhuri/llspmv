@@ -14,6 +14,20 @@
 #include"spmv.h"
 #include"lookup.h"
 
+using namespace std;
+
+void print_matrix(vector<vector<int>>& m, const string str = "Output"){
+    cout << str << '\n';
+    for(auto i : m){
+        for(auto j : i){
+            cout << j << " ";
+        }
+        cout << '\n';
+    }
+    cout << '\n';
+}
+
+
 std::vector<std::vector<int>> get_products(std::vector<std::vector<int>> x_) {
     int t = x_.size();
 
@@ -79,18 +93,20 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
                 }
                 temp_mat.push_back(row);
             }
+            cout << i << " " << j << "\n";
+            print_matrix(temp_mat);
             CSR temp_csr(temp_mat);
             lut[{i,j}] = computeLUT_3(temp_csr);
         }
     }
     long end = clock();
     cout << "LUT Computation: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
-    #if 0
+    #if 1
     for(auto i: lut){
         cout << "Key: " << i.first[0] << " " << i.first[1] << '\n';
         for(auto m: i.second){
             for(auto n: m){
-                cout <<  n << " ";
+                cout << n << " ";
             }
             cout << '\n';
         }  
@@ -98,25 +114,31 @@ std::vector<std::vector<int>> four_russians_serial(std::vector<std::vector<int>>
     #endif
     
     start = clock();
-    for (int i = 0; i < n; i++) {
-        for (int j = 0, m = 0; j < n; m = j) {
+    for (int j = 0; j < n; j++) {
+        for (int i = 0, m = 0; i < n; m = i) {
             int k = 0;
             int index = 0;
-
+            cout << "Index calc: ";
             while (k < t) {
                 index = index << 1;
                 index = index | B_[i][j];
-
+                cout << B_[i][j] << " ";
                 k++;
-                j++;
+                i++;
             }
+            cout << '\n';
 
-            vector<int> temp = lut[{i/t,(j-1)/t}][index];
+            cout << "Index: " << index << '\n';
+
+            vector<int> temp = lut[{j/t, (i-1)/t}][index];
+            cout << "A: " << j/t << " " << (i-1)/t << " B: " << m << " " << j << "\n";
 
             for(auto x : temp){
-                C[m][i] = x;
+                cout << x << " ";
+                C[m][j] = x;
                 m++;
             }
+            cout << '\n';
         }
     }
     end = clock();

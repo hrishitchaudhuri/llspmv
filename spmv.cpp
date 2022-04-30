@@ -81,11 +81,11 @@ std::vector<int> bool_spmv_serial(CSR csr_, std::vector<int> x_)	{
 	int y_0;
 	std::vector<int> y;
 
-	for (int i = 0; i < (int) csr_.row_pointer.size(); i++) {
+	for (int i = 0; i < (int) csr_.row_pointer.size()-1; i++) {
 		y_0 = 0;
 		
 		for (int k = csr_.row_pointer[i]; k < csr_.row_pointer[i+1]; k++) {
-			y_0 = y_0 ^ csr_.values[k] & x_[csr_.column_index[k]];
+			y_0 = y_0 | (csr_.values[k] & x_[csr_.column_index[k]]);
 
 			// y_0 is a shared variable; bottleneck
 
@@ -130,7 +130,7 @@ std::vector<int> bool_spmv_parallel_1(CSR csr_, std::vector<int> x_) {
 		#pragma omp parallel for
 		for (int k = csr_.row_pointer[i]; k < csr_.row_pointer[i+1]; k++) {
 			//printf("%d %d\n", k, omp_get_thread_num());
-			y_0 = y_0 ^ (csr_.values[k] & x_[csr_.column_index[k]]);
+			y_0 = y_0 | (csr_.values[k] & x_[csr_.column_index[k]]);
 		}
 
 		y.push_back(y_0);
@@ -143,4 +143,16 @@ std::vector<int> bool_spmv_parallel_2(CSR csr_, std::vector<int> x) {
 	int y_0;
 	std::vector<int> y;
 	return y;
+}
+
+std::vector<int> bool_spmv_serial_naive(vector<vector<int>> mat, vector<int> vec){
+	vector<int> out;
+	for(int i = 0; i < mat.size(); i++){
+		int curr = 0;
+		for(int j = 0; j < vec.size();j++){
+			curr = curr | (mat[i][j]&vec[j]);
+		}
+		out.push_back(curr);
+	}
+	return out;
 }
