@@ -1,39 +1,186 @@
-#include"csr.h"
 #include<vector>
 #include<iostream>
 
+#include<time.h>
+
+#include"csr.h"
 #include"spmv.h"
+#include "lookup.h"
+#include "four_russians.cpp"
+
+#define NUM_ELEMENTS 10
+#define SPARSITY_COEF 7
 
 using namespace std;
+typedef std::vector<std::vector<int>> matrix;
+typedef std::vector<int> vtr;
+
+int rand_seed = 0;
+
+matrix generateSparseMatrix(int n, int sparsity) {
+    matrix m_1;
+    vtr m_2;
+    srand(rand_seed+=10);
+
+    for (int j = 0; j < n; j++) {
+        for (int i = 0; i < n; i++) {    
+            if (rand() % sparsity == 0) {
+                m_2.push_back(1);
+            }
+
+            else {
+                m_2.push_back(0);
+            }
+        }
+
+        m_1.push_back(m_2);
+        m_2.clear();
+    }
+
+    return m_1;
+}
+
+vtr generateSparseVector(int n, int sparsity) {
+    vtr v_1;
+
+    for (int i = 0; i < n; i++) {
+        if (rand() % sparsity == 0) {
+            v_1.push_back(1);
+        }
+
+        else {
+            v_1.push_back(0);
+        }
+    }
+
+    return v_1;
+}
 
 int main(int argc, char * argv[]){
-    vector<vector<int>> a = {{3,0,0,0}, {1,0,4,0}, {0,0,0,5}, {5,3,0,0}};
-    CSR csr(a);
+    matrix a;
+    a = generateSparseMatrix(NUM_ELEMENTS, SPARSITY_COEF);
+    matrix b = generateSparseMatrix(NUM_ELEMENTS, SPARSITY_COEF);
 
-    vector<int> y = {4, 5, 3, 1};
+    //CSR csr(a);
+
+    vtr y;
+    y = generateSparseVector(NUM_ELEMENTS, SPARSITY_COEF);
+
+    matrix c;
+    vtr temp;
+
+    int res;
+
+    for (int i = 0; i < NUM_ELEMENTS; i++) {
+        temp.clear();
+        for (int j = 0; j < NUM_ELEMENTS; j++) {
+            res = 0;
+            for (int k = 0; k < NUM_ELEMENTS; k++) {
+<<<<<<< HEAD
+                res = res ^ (a[i][k] & b[k][j]);
+=======
+                res = res | (a[i][k] & b[k][j]);
+>>>>>>> 32b68a2bbabacc71e9218ddac59408157406e35c
+            }
+            temp.push_back(res);
+        }
+        c.push_back(temp);
+    }
+
+    clock_t start, end;
 
     #if 0
-    vector<int> res_1 = mv_naive(a, y);
+    vtr res_1 = mv_naive(a, y);
 
+    /*
     for (auto x: res_1) {
         cout << x << "\n";
     }
+    */
     #endif
 
     #if 0
-    vector<int> res_2 = spmv_serial(csr, y);
+    vtr res_2 = spmv_serial(csr, y);
 
+    /*
     for (auto x: res_2) {
         cout << x << "\n";
+    }
+    */
+    #endif
+
+    #if 0
+    vtr res_3 = spmv_parallel_1(csr, y);
+
+    /*
+    for (auto x: res_3) {
+        cout << x << "\n";
+    }
+    */
+    #endif
+
+    #if 0
+    start = clock();
+    matrix m_0 = computeLUT_1(a);
+    end = clock();
+
+    cout << "LUT 1: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
+    #endif
+
+    #if 0
+    start = clock();
+    matrix m_1 = computeLUT_2(csr);
+    end = clock();
+
+    cout << "LUT 2: " << (double) (end - start) / CLOCKS_PER_SEC << "\n";
+    #endif
+
+    print_matrix(a, "A");
+    print_matrix(b, "B");
+
+    #if 1
+    //matrix m_2 = computeLUT_3(csr);
+    cout << "Serial Output:\n";
+    vector<vector<int>> out_1 = four_russians_serial(a,b);
+
+    #if 0
+    for(auto i: out){
+        for(auto j: i){
+            cout << j << " ";
+        }
+        cout << "\n";
+    }
+    #endif
+    
+    cout << "Parallel Output:\n";
+    vector<vector<int>> out_2 = four_russians_parallel_2(a,b);
+    
+    #if 1
+    for(auto i: out_1){
+        for(auto j: i){
+            cout << j << " ";
+        }
+        cout << "\n";
+    }
+cout << " ----------------------------------- \n";
+    for(auto i: c){
+        for(auto j: i){
+            cout << j << " ";
+        }
+        cout << "\n";
     }
     #endif
 
     #if 1
-    vector<int> res_3 = spmv_parallel_1(csr, y);
-
-    for (auto x: res_3) {
-        cout << x << "\n";
+    for (int i = 0; i < out_1.size(); i++) {
+        for (int j = 0; j < out_1[i].size(); j++) {
+            if (out_1[i][j] != c[i][j]) {
+                cout << "Mismatch on " << i << " " << j << "\n";
+            }
+        }
     }
+    #endif
+
     #endif
 
     return 0;
