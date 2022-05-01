@@ -76,11 +76,7 @@ int main(int argc, char * argv[]){
         for (int j = 0; j < NUM_ELEMENTS; j++) {
             res = 0;
             for (int k = 0; k < NUM_ELEMENTS; k++) {
-<<<<<<< HEAD
-                res = res ^ (a[i][k] & b[k][j]);
-=======
                 res = res | (a[i][k] & b[k][j]);
->>>>>>> 32b68a2bbabacc71e9218ddac59408157406e35c
             }
             temp.push_back(res);
         }

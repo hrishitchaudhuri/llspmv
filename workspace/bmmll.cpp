@@ -2,6 +2,8 @@
 #include<vector>
 #include<cmath>
 
+#include<omp.h>
+
 using namespace std;
 
 typedef vector<vector<int>> Matrix;
@@ -28,7 +30,9 @@ Matrix getRowSums(Matrix A, int n, int ps, int idx) {
     int bp = 1;
     int k = 0;
 
-    for (int i = 1; i < pow(2, ps); i++) {
+    int m = pow(2, ps);
+
+    for (int i = 1; i < m; i++) {
         v_t = getRowFromBottom(A, idx, ps, k + 1);
         temp[i] = vectorOr(temp[i - pow(2, k)], v_t);
 
@@ -81,10 +85,14 @@ Matrix boolMatrixMult(Matrix A, Matrix B, int partitionSize) {
     Vector IndexVector (partitionSize);
     int idx;
 
+    omp_set_num_threads(4);
+
+    #pragma omp parallel for private(RowSums)
     for (int i = 0; i < A.size() / partitionSize; i++) {
         // cout << "Iteration: " << i << "\n";
         RowSums = getRowSums(B, B.size(), partitionSize, i);
 
+        // #pragma omp parallel for
         for (int j = 0; j < A.size(); j++) {
             copyVectors(IndexVector, A[j], 0, partitionSize, i * partitionSize, (i + 1) * partitionSize);
             
@@ -146,7 +154,7 @@ Vector generateSparseVector(int n, int sparsity) {
 
 #define NUM_ELEMENTS 1000
 #define SPARSITY_COEF 7
-#define PARTITION_SZ 8
+#define PARTITION_SZ 16
 
 int main() {
     Matrix a = generateSparseMatrix(NUM_ELEMENTS, SPARSITY_COEF);
